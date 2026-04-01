@@ -205,7 +205,7 @@ A feature request has been raised with the 2sxc team. This repository serves as 
 
 ## Tested With
 
-- DNN 9.13.10
+- DNN 10.03.00
 - 2sxc 21.05.00
 - Portal languages: `en-CA` (primary) + `fr-CA` (secondary)
 
