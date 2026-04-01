@@ -1,0 +1,98 @@
+@inherits ToSic.Sxc.Dnn.RazorComponent
+<script src="/DesktopModules/ToSic.Sxc/js/2sxc.api.min.js"></script>
+
+<h2>Multilingual Person — Proof of Concept</h2>
+
+<div style="margin-bottom: 20px;">
+    <h3>Step 1 — Check registered languages</h3>
+    <button type="button" onclick="getLanguages(this)">Get Languages</button>
+    <pre id="lang-result"></pre>
+</div>
+
+<div style="margin-bottom: 20px;">
+    <h3>Step 2 — Create a record</h3>
+    <button type="button" onclick="createPerson(this)">Create Test Person</button>
+    <pre id="create-result"></pre>
+</div>
+
+<div style="margin-bottom: 20px;">
+    <h3>Step 3 — Update a record</h3>
+    <input type="number" id="update-id" placeholder="Entity ID from Step 2" style="width:200px" />
+    <button type="button" onclick="updatePerson(this)">Update Test Person</button>
+    <pre id="update-result"></pre>
+</div>
+
+<div style="margin-bottom: 20px;">
+    <h3>Step 4 — List all records</h3>
+    <button type="button" onclick="listPersons(this)">List Records</button>
+    <pre id="list-result"></pre>
+</div>
+
+<script>
+var moduleId = @Dnn.Module.ModuleID;
+
+function getSxc() {
+    if (typeof $2sxc === 'undefined') {
+        console.error('$2sxc is not loaded yet');
+        return null;
+    }
+    return $2sxc(moduleId);
+}
+
+async function getLanguages(btn) {
+    var sxc = getSxc();
+    if (!sxc) return;
+    try {
+        var result = await sxc.webApi.fetchJson('app/auto/api/Multilingual/Languages');
+        document.getElementById('lang-result').innerText = JSON.stringify(result, null, 2);
+    } catch(err) {
+        document.getElementById('lang-result').innerText = 'ERROR: ' + JSON.stringify(err, null, 2);
+    }
+}
+
+async function createPerson(btn) {
+    var sxc = getSxc();
+    if (!sxc) return;
+    var payload = {
+        "Name":          { "en-ca": "John Smith",     "fr-ca": "Jean Dupont" },
+        "EyeColour":     { "en-ca": "Blue",           "fr-ca": "Bleu" },
+        "FavouriteFood": { "en-ca": "Chocolate cake", "fr-ca": "Gâteau au chocolat" }
+    };
+    try {
+        var result = await sxc.webApi.fetchJson('app/auto/api/Multilingual/Create', payload);
+        document.getElementById('create-result').innerText = JSON.stringify(result, null, 2);
+    } catch(err) {
+        document.getElementById('create-result').innerText = 'ERROR: ' + JSON.stringify(err, null, 2);
+    }
+}
+
+async function updatePerson(btn) {
+    var sxc = getSxc();
+    if (!sxc) return;
+    var entityId = document.getElementById('update-id').value;
+    if (!entityId) { alert('Please enter an Entity ID first'); return; }
+    var payload = {
+        "Name":          { "en-ca": "John Smith (updated)", "fr-ca": "Jean Dupont (mis à jour)" },
+        "EyeColour":     { "en-ca": "Green",                "fr-ca": "Vert" },
+        "FavouriteFood": { "en-ca": "Apple pie",            "fr-ca": "Tarte aux pommes" }
+    };
+    try {
+        var result = await sxc.webApi.fetchJson(
+            'app/auto/api/Multilingual/Update?entityId=' + entityId, payload);
+        document.getElementById('update-result').innerText = JSON.stringify(result, null, 2);
+    } catch(err) {
+        document.getElementById('update-result').innerText = 'ERROR: ' + JSON.stringify(err, null, 2);
+    }
+}
+
+async function listPersons(btn) {
+    var sxc = getSxc();
+    if (!sxc) return;
+    try {
+        var result = await sxc.webApi.fetchJson('app/auto/api/Multilingual/List');
+        document.getElementById('list-result').innerText = JSON.stringify(result, null, 2);
+    } catch(err) {
+        document.getElementById('list-result').innerText = 'ERROR: ' + JSON.stringify(err, null, 2);
+    }
+}
+</script>
